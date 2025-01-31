@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'rbwc'
+
+options = {}
+
+OptionParser.new do |parser|
+  parser.banner = "rbwc [-clmw] [file ...]"
+  parser.separator " "
+  parser.separator "Specific options:"
+  parser.on("-c", "Count the number of bytes in each input file")
+  parser.on("-l", "Counts the number of lines in each input file")
+  parser.on("-w", "Counts the number of words in each input file")
+  parser.on("-m", "Counts the number of characters in each input file")
+  parser.on("-h", "--help", "Show this message") { puts parser;  exit }
+end.parse!(into: options)
+
+begin
+  files = []
+
+  if ARGV.empty? == false
+    ARGV.each do |file_path| 
+      unless File.file?(file_path) == false
+        files << { content: File.read(file_path), path: file_path }
+      end
+    end
+  else
+    files << { content: $stdin.read, path: '' } 
+  end
+
+  if files.empty?
+    raise "No files found"
+  else
+    option_symbols = options.empty? ? nil : options.keys
+    files.each do |file|
+      puts "\s\s\s\s#{RBWC.process(file[:content], option_symbols)} #{file[:path]}"
+    end
+  end
+
+rescue => e
+  puts e.message
+end
+
