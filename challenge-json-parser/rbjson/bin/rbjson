@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'rbjson'
+
+options = {}
+
+OptionParser.new do |parser|
+  parser.banner = "rbjson [file ...]"
+  parser.separator " "
+  parser.separator "Specific options:"
+  parser.on("-h", "--help", "Show this message") { puts parser;  exit }
+end.parse!(into: options)
+
+begin
+  tokens = RBJSON.lexer('{}')
+  RBJSON.parse(tokens)
+rescue => e
+  raise(e)
+end
+
